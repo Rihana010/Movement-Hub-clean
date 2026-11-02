@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id                Int      @id @default(autoincrement())
+  title             String
+  date              DateTime    
+  endDate           DateTime?   
+  startTime         String
+  endTime           String
+  location          String
+  isPublic          Boolean  @default(false)
+  latitude          Float?
+  longitude         Float?
+  ownerUserId       String?  @db.Uuid
+  description       String
+  volunteerCapacity Int
+  isActive Boolean @default(true)
+  inviteCode        String   @unique
+  createdAt         DateTime @default(now())
+
+createdByAdminId Int?
+createdByAdmin   AdminUser? @relation(fields: [createdByAdminId], references: [id])
+ownerUser         UserProfile? @relation("EventOwner", fields: [ownerUserId], references: [id])
+
+  signups VolunteerSignup[]
+  adminAssignments EventAdminAssignment[]
+
+  @@index([ownerUserId])
+}
+
+model EventAdminAssignment {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  adminId   Int
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id])
+  admin AdminUser @relation(fields: [adminId], references: [id])
+
+  @@unique([eventId, adminId])
+}
+
+model VolunteerSignup {
+  id                 Int      @id @default(autoincrement())
+  fullName           String
+  email              String?
+  phone              String?
+  locationOrDepartment String?
+  status             String   @default("confirmed")
+  selectedDates      String[]
+  createdAt          DateTime @default(now())
+
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id])
+  userId  String? @db.Uuid
+  user    UserProfile? @relation("UserSignups", fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model AdminUser {
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  fullName           String?
+  passwordHash       String
+  passwordChangedAt  DateTime @default(now())
+  sessionVersion     Int      @default(0)
+  mustChangePassword Boolean  @default(true)
+  role               String   @default("event_admin")
+  isActive           Boolean @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  createdEvents      Event[]
+  eventAssignments   EventAdminAssignment[]
+}
+
+model UserProfile {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  fullName  String?
+  avatarUrl String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedEvents   Event[]           @relation("EventOwner")
+  joinedSignups VolunteerSignup[] @relation("UserSignups")
+  impactCrates  ImpactCrate[]
+}
+
+model ImpactCrate {
+  id         Int       @id @default(autoincrement())
+  userId     String    @db.Uuid
+  sourceType String
+  sourceId   Int
+  reward     String?
+  openedAt   DateTime?
+  user       UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceType, sourceId])
+  @@index([userId])
+}
