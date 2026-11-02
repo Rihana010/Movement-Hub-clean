@@ -1,14 +1,6 @@
-<p align="center">
-  <img src=".github/assets/banner.png" alt="Movement Hub Banner" width="100%">
-</p>
+# Movement Hub
 
-<h1 align="center">Movement Hub</h1>
-
-<p align="center">
-A modern, open-source movement event management platform built with Next.js, TypeScript, Prisma, PostgreSQL, and Tailwind CSS.
-</p>
-
-<p align="center">
+A private, link-based volunteer coordination platform for movements, built for Problem 3 "The Movement".
 
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
@@ -16,171 +8,76 @@ A modern, open-source movement event management platform built with Next.js, Typ
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
 
-</p>
+**Live demo:** https://movement-hub-clean.vercel.app
 
-## What is Movement Hub?
+## The problem
 
-An open-source platform for managing volunteer events from start to finish.
+Movements run on WhatsApp, but WhatsApp has no sign-up tracking, no capacity limits, and no accountability. Public event pages expose sensitive causes to spam and trolls. Movement Hub keeps the channel people already use and adds structure on top.
 
-I originally built this project for an organization that needed a better way to organize volunteer opportunities, manage event owners, and keep track of registrations. After seeing how well it worked in production, I decided to remove all organization-specific branding and release it as a generic platform that anyone can build on.
+## What it does
 
-Whether you're a nonprofit, school, community group, or company, Movement Hub gives you a solid foundation for running volunteer programs without starting from scratch.
+**Volunteers**
+- Sign in with Google
+- Open a mission through its private invite link (`/join/<code>`)
+- Sign up with just a name and phone number
+- View the Heat Map of where help is needed
 
----
+**Organizers**
+- Super Admin and Event Admin roles
+- Create, edit, archive, and restore events
+- Share events via WhatsApp or copy link
+- View and export signup lists
+- Manage administrator accounts
 
-## What it can do
+**Private by default:** there is no public event list. An event is reachable only through its invite code.
 
-### Public Experience
+We extended and reworked it for this project: Google OAuth for volunteers, the Heat Map, the invite-only access model, WhatsApp sharing, and transaction-based capacity protection.
 
-* Browse upcoming volunteer opportunities
-* View event details
-* Sign up for events
-* View assigned event contacts
+## Security design
 
-### Admin Portal
+- Role-based access: Event Admins can only see and manage events they created or were assigned
+- Admin sessions use HMAC-signed cookies
+- Forced password change on first admin login
+- Google sign-in never grants admin access (separate auth paths)
+- Minimal data collection from volunteers
+- Capacity checks run inside database transactions, so concurrent signups cannot overbook an event
 
-* Secure administrator login
-* Super Admin and Event Admin roles
-* Force password change on first login
-* Create, edit, archive, and restore events
-* Assign event owners
-* View volunteer registrations
-* Export signup lists
-* Manage administrator accounts
+## Tech stack
 
-### Changes in This Fork
+Next.js, React, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Google OAuth, Vercel
 
-- Fixed volunteer counts on the public event listings.
-- Added transaction-based capacity protection to prevent   registrations from exceeding event limits.
-- Improved handling of confirmation email failures.
-
----
-
-## Built With
-
-* Next.js
-* React
-* TypeScript
-* Prisma
-* PostgreSQL
-* Tailwind CSS
-
----
-
-## Getting Started
-
-Clone the repository.
+## Getting started
 
 ```bash
-git clone https://github.com/Rihana010/open-volunteer-platform.git
-```
-
-Install dependencies.
-
-```bash
+git clone https://github.com/Rihana010/Movement-Hub-clean.git
+cd Movement-Hub-clean
 npm install
-```
-
-Create a `.env` file using the included `.env.example`.
-
-Run the database migrations.
-
-```bash
-npx prisma migrate dev
-```
-
-Generate the Prisma client.
-
-```bash
+cp .env.example .env
+npx prisma migrate deploy
 npx prisma generate
-```
-
-Create the demo administrator accounts.
-
-```bash
-npx tsx scripts/create-admin.ts
-```
-
-Start the development server.
-
-```bash
+npx tsx scripts/create-admin.ts you@example.com "your password" "Your Name"
 npm run dev
 ```
 
-Open your browser and navigate to:
+Open http://localhost:3000. Set `SESSION_SECRET` and `NEXT_PUBLIC_SITE_URL` in `.env`.
 
-```
-http://localhost:3000
-```
+## Roadmap
 
----
+- Append-only audit log of admin actions
+- Rate limiting on join endpoints
+- Expiring and revocable invite codes
+- Phone verification (OTP) and encryption of stored phone numbers
+- 2FA for admins
+- Volunteer skill and location matching
 
-## Customizing the Platform
+## Team
 
-This project is designed to be rebranded.
-
-You can easily customize:
-
-* Organization name
-* Colors
-* Logo
-* Departments
-* Locations
-* Administrator accounts
-* Email domain
-* Event categories
-
-to fit your own organization.
-
----
-
-## Screenshots
-
-## Screenshots
-
-Screenshots of the public event listings and admin dashboard will be added here.
-
----
-
-## Why I Open Sourced This
-
-There are plenty of event management platforms out there, but many are either expensive, overly complicated, or locked behind subscriptions.
-
-My goal was to create something that's clean, modern, easy to understand, and free for anyone to use or improve.
-
-If this project saves you time or helps your organization, that's a win.
-
----
-
-## Contributing
-
-If you find a bug, have an idea for a feature, or want to improve the project, feel free to open an issue or submit a pull request.
-
----
+| Name | Role |
+|------|------|
+| Rihana | Full-Stack Lead: architecture, auth and access model, backend |
+| charanraj  | Frontend & UX: UI, Heat Map, volunteer flow |
+| ashmar | Product & Security/QA: problem research, testing, pitch and demo |
 
 ## License
 
-Movement Hub is released under the MIT License.
-
-You're free to use it, modify it, and build on it.
-
----
-
-## About the Author
-
-I'm **Matthew Ikechukwu Eleweke**, a product designer and full-stack developer who enjoys building practical tools that solve real problems.
-
-If you end up using Movement Hub, I'd genuinely love to see what you build with it.
-
----
-
-## Access model (v2)
-
-- `/` is the gateway: volunteers paste the link they got on WhatsApp, admins sign in with email and password.
-- Every event has a private invite code. Volunteers reach it at `/join/<code>`; there is no public event list. Volunteers give only their name and phone number.
-- **Super admin** sees every event, creates and deactivates event admins, and can delete any event or volunteer.
-- **Event admins** create events and see, share, edit and delete only the events they created or were assigned to.
-- Admins share an event with **Share on WhatsApp** or **Copy link**. Set `NEXT_PUBLIC_SITE_URL` to your public address so the links work for other people.
-- Admin sessions are signed (HMAC) cookies. Set `SESSION_SECRET` (see `.env.example`).
-- Setup: `npx prisma migrate deploy`, then create your super admin with
-  `npx tsx scripts/create-admin.ts you@example.com "your password" "Your Name"`.
+Released under the MIT License. See [LICENSE](LICENSE). The original copyright notice is retained as the license requires.
