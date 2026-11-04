@@ -10,6 +10,8 @@ A private, link-based volunteer coordination platform for movements, built for P
 
 **Live demo:** https://movement-hub-clean.vercel.app
 
+**Result:** Team HAC LABS placed top 6 out of 30 teams.
+
 ## The problem
 
 Movements run on WhatsApp, but WhatsApp has no sign-up tracking, no capacity limits, and no accountability. Public event pages expose sensitive causes to spam and trolls. Movement Hub keeps the channel people already use and adds structure on top.
@@ -44,7 +46,7 @@ We extended and reworked it for this project: Google OAuth for volunteers, the H
 
 ## Tech stack
 
-Next.js, React, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Google OAuth, Vercel
+Next.js, React, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase (Google OAuth), Leaflet, Vercel
 
 ## Getting started
 
