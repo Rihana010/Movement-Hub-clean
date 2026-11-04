@@ -82,4 +82,6 @@ Open http://localhost:3000. Set `SESSION_SECRET` and `NEXT_PUBLIC_SITE_URL` in `
 
 ## License
 
-Released under the MIT License. See [LICENSE](LICENSE). The original copyright notice is retained as the license requires.
+Released under the MIT License. See [LICENSE](LICENSE).
+
+This project is built on [Symplapp/open-volunteer-platform](https://github.com/Symplapp/open-volunteer-platform), which states in its README that it is released under the MIT License. Its repository did not include a copyright notice in its LICENSE file, so none is reproduced here. The copyright line in [LICENSE](LICENSE) covers the changes made by this team.
