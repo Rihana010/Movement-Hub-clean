@@ -34,8 +34,10 @@ Validation observed:
 
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
-- `npm run lint`: no errors; one warning for unused `formatRole` in
-  [app/admin/users/page.tsx](./app/admin/users/page.tsx:12).
+- `npm run lint`: no errors at generation time; one warning for unused
+  `formatRole` in [app/admin/users/page.tsx](./app/admin/users/page.tsx). That
+  helper is no longer present in the source tree (checked 2026-11-05), so the
+  warning is stale; lint has not been re-run since.
 - No application integration tests are present in the source tree, so the
   statuses below are not runtime guarantees.
 
